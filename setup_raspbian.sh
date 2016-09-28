@@ -39,9 +39,6 @@ BOAT_NETWORK_WIFI_SSID=freeboard
 BOAT_NETWORK_WIFI_PASS=freeboard
 BOAT_NETWORK_WIFI_CHAN=10
 
-JAVA_VERSION="1.8.0_91"
-JAVA_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-arm32-vfp-hflt.tar.gz"
-
 # Freeboard source location
 FREEBOARD_CLONE_URL="https://github.com/rob42/freeboard-server.git"
 FREEBOARD_BRANCH=""
@@ -237,11 +234,19 @@ ensure_package_installed "lsb-release"
 LSB_ID=$(lsb_release -is)
 LSB_CODENAME=$(lsb_release -cs)
 
-## check lsb_release for Raspbian jessie
-if [ "${LSB_ID}" != "Raspbian" -o "${LSB_CODENAME}" != "jessie" ]; then
+## check lsb_release for supported distro (set some release specific settings)
+if [ "${LSB_ID}" == "Raspbian" -a "${LSB_CODENAME}" == "jessie" ]; then
+    JAVA_ARCH="arm32-vfp-hflt"
+elif [ "${LSB_ID}" == "Debian" -a "${LSB_CODENAME}" == "sid" ]; then
+    #TODO: auto-detect arch (i386?)
+    JAVA_ARCH="x64"
+else
     echo "distro ${LSB_ID} ${LSB_CODENAME} is not supported."
     exit 1
 fi
+
+JAVA_VERSION="1.8.0_91"
+JAVA_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-${JAVA_ARCH}.tar.gz"
 
 
 ## change to HOME
