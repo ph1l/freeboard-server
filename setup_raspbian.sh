@@ -243,11 +243,6 @@ if [ "${LSB_ID}" != "Raspbian" -o "${LSB_CODENAME}" != "jessie" ]; then
     exit 1
 fi
 
-## check running user is 'pi'
-if [ "$(id -nu)" != "pi" ]; then
-    echo "ERROR: script must be run as the 'pi' user"
-    exit 1
-fi
 
 ## change to HOME
 cd ${HOME}
@@ -299,11 +294,18 @@ if ! diff systemd.freeboard.environment /etc/default/freeboard; then
     DO_RESTART_SERVICE=Y
 fi
 
-if ! diff systemd.freeboard.service /etc/systemd/system/freeboard.service; then
-    sudo cp systemd.freeboard.service /etc/systemd/system/freeboard.service
+cat systemd.freeboard.service | sed \
+        -e 's|@@USER@@|'$(id -un)'|g' \
+        -e 's|@@GROUP@@|'$(id -gn)'|g' \
+        -e 's|@@HOME@@|'${HOME}'|g' \
+    > systemd.freeboard.service.tmp
+
+if ! diff systemd.freeboard.service.tmp /etc/systemd/system/freeboard.service; then
+    sudo cp systemd.freeboard.service.tmp /etc/systemd/system/freeboard.service
     sudo systemctl daemon-reload
     DO_RESTART_SERVICE=Y
 fi
+rm systemd.freeboard.service.tmp
 
 popd
 
