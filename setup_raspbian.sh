@@ -245,8 +245,8 @@ else
     exit 1
 fi
 
-JAVA_VERSION="1.8.0_91"
-JAVA_URL="http://download.oracle.com/otn-pub/java/jdk/8u91-b14/jdk-8u91-linux-${JAVA_ARCH}.tar.gz"
+JAVA_VERSION="1.8.0_101"
+JAVA_URL="http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-${JAVA_ARCH}.tar.gz"
 
 
 ## change to HOME
